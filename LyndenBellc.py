@@ -66,11 +66,6 @@ class Limit(star):
 
 
 
-
-
-
-
-
 class LyndenBell():
     """A class with redshift and luminosity. It want to compute the luminosity function and redshift for some objects with Lynden-Bell c- method.
     It also consider the luminosity evolution (1+z)^k."""
@@ -79,15 +74,42 @@ class LyndenBell():
         self.k = k
         self.lim = lim
         self.L0 = self.L / (1 + self.z) ** self.k
+        self.lim.Llim = self.lim.Llim / (1 + self.z) ** self.k
 
-    @property
-    def k(self):
-        return self.__k
+    def lyndenbellc(self):
+        self.__Marr = []
+        self.__Narr = []
+        for i in range(len(self.x)):
+            zijudge = self.z <= self.lim.zlim[i]
+            Lijudge = self.L0 >= self.L0[i]
+            judgearray = np.logical_and(zijudge, Lijudge)
+            self.__Narr.append(judgearray.sum())
+        for j in range(len(self.y)):
+            zjjudge = self.z <= self.z[j]
+            Ljjudge = self.L0 >= self.lim.Llim[j]
+            judgearray = np.logical_and(zjjudge, Ljjudge)
+            self.__Marr.append(judgearray.sum())
+        zdis = []
+        Ldis = []
+        for i in range(len(x)):
+            ztempfunc = 1
+            Ltempfunc = 1
+            ziarray = self.z < self.z[i]
+            Liarray = self.L0 > self.L0[i]
+            for j in range(len(self.z)):
+                if ziarray[j] and self.__Marr[j]: ztempfunc *= (1 + 1 / self.__Marr[j])
+            for j in range(len(self.L0)):
+                if Liarray[j] and self.__Narr[j]: Ltempfunc *= (1 + 1 / self.__Narr[j])
+            zdis.append(ztempfunc)
+            Ldis.append(Ltempfunc)
+        zdis = np.array(zdis)
+        Ldis = np.array(Ldis)
+        return zdis, Ldis
+    
 
-    @k.setter
-    def k(self, k):
-        self.__k = k
+    
 
+    
 
 
     

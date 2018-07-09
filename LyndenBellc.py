@@ -29,19 +29,46 @@ class star():
 
 class Limit(star):
     "This class is prepared for LyndenBell. It return the flux limit of L and the limit of z."
-    def __init__(self, z, L, xlim = 0, ylim = 0, Flim=0, cosmo=Planck15):
+    def __init__(self, z, L, zlim = 0, Llim = 0, Flim=0, cosmo=Planck15):
         super().__init__(z, L)
-        self.xlim = xlim
-        self.ylim = ylim
+        self.zlim = xlim
+        self.Llim = ylim
         self.Flim = Flim 
-        self.cosmo = Planck15
+        self.cosmo = cosmos 
+        if self.Flim != 0:
+            __x = x.linspace(0, 10, 100)
+            __dl = self.cosmos.luminosity_distance(__x).cgs.value
+            __y = 4 * math.pi * __dl ** 2 * self.Flim
+
 
     @property
-    def xlim(self):
-        return self.__xlim
+    def zlim(self):
+        return self.__zlim
+    @zlim.setter
+    def zlim(self, zlim):
+        if zlim == 0:
+            assert Flim ！= 0， "zlim and Flim cannot both be zero"
+            f = itp.interp1d(__y, __x)
+            self.__zlim = f(self.L)
+        else 
+            self.__zlim = zlim 
+    
+    @property
+    def Llim(self):
+        return self.__Llim
+    @Llim.setter
+    def Llim(self, Llim):
+        if Llim == 0:
+            assert Flim != 0, "Llim and Flim cannot both be zero"
+            self.__Llim = 4 * math.pi * self.cosmo.luminosity_distance(self.z).cgs.value ** 2 * self.Flim
+        else
+            self.__Llim = Llim
 
-    @xlim.setter
-    def xlim(self):
+
+
+
+
+
 
 
 class LyndenBell():

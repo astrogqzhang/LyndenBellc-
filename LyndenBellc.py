@@ -44,39 +44,14 @@ class Limit(star):
     def xlim(self):
 
 
-
-
-
-
 class LyndenBell():
     """A class with redshift and luminosity. It want to compute the luminosity function and redshift for some objects with Lynden-Bell c- method.
     It also consider the luminosity evolution (1+z)^k."""
     def __init__(self, z, L, k = 0):
-        self.z = z
-        self.L = L
+        super().__init__(z, L)
         self.k = k
         self.L0 = self.L / (1 + self.z) ** self.k
 
-    
-    @property
-    def z(self):
-        return self.__z
-
-    @z.setter
-    def z(self, z):
-        assert (z > 0).all(), "redshift must be nonzero and non-negative"
-        self.__z = z
-
-
-    @property
-    def L(self):
-        return self.__L
-
-    @L.setter
-    def L(self, L):
-        assert (L > 0).all(), "Luminosity must be nonzero and non-negative"
-        self.__L = L
-    
     @property
     def k(self):
         return self.__k

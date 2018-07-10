@@ -81,6 +81,8 @@ class LyndenBell(star):
         self.L0 = self.L / (1 + self.z) ** self.k
 
     def lyndenbellc(self):
+        self.lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)
+        self.L0 = self.L / (1 + self.z) ** self.k
         self.__Marr = []
         self.__Narr = []
         for i in range(len(self.z)):
@@ -113,7 +115,7 @@ class LyndenBell(star):
     def testindependence(self):
         __karray = []
         __tau = []
-        for k in np.linspace(-5, 5, 2000):
+        for k in np.linspace(-5, 5, 5000):
             __L0 = self.L / (1 + self.z) ** k
             __Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo=self.cosmo)
             uptemp = 0
@@ -132,9 +134,9 @@ class LyndenBell(star):
             __karray.append(k)
         __tau = np.array(__tau)
         __karray = np.array(__karray)
-        print("The best fit of k is {}".format(__karray[np.abs(__tau.argmin())])) 
-        print("The 1 sigma error is k is +{} -{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))
-        self.k = __karray[np.abs(__tau.argmin())]
+        print("The best fit of k is {}".format(__karray[np.abs(__tau).argmin()])) 
+        print("The 1 sigma error is k is +1 sigma:{} -1 sigma:{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))
+        self.k = __karray[np.abs(__tau).argmin()]
 
 
 

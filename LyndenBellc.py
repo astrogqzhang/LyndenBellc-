@@ -49,11 +49,11 @@ class Limit(star):
         return self.__zlim
     @zlim.setter
     def zlim(self, zlim):
-        if type(zlim) == type(0):
-            assert self.Flim != 0, "zlim and Flim cannot both be zero"
+        if self.Flim != 0:
             f = itp.interp1d(self.__y, self.__x, fill_value="extrapolate")
             self.__zlim = f(self.L0)
         else: 
+            assert type(zlim) == type(0), "zlim and Flim can not both be zero"
             f = itp.interp1d(self.Llim / (1 + self.z) ** self.k, self.z, fill_value="extrapolate")
             self.__zlim = f(self.L0) 
     
@@ -62,10 +62,10 @@ class Limit(star):
         return self.__Llim
     @Llim.setter
     def Llim(self, Llim):
-        if type(Llim) == type(0):
-            assert self.Flim > 0, "Llim and Flim cannot both be zero"
+        if self.Flim != 0:
             self.__Llim = 4 * math.pi * self.cosmo.luminosity_distance(self.z).cgs.value ** 2 * self.Flim / (1 + self.z) ** self.k
         else:
+            assert type(Llim) == type(0), "zlim and Flim can not both be zero"
             self.__Llim = Llim / (1 + self.z) ** self.k
 
 
@@ -121,9 +121,9 @@ class LyndenBell(star):
             for i in range(len(self.z)):
                 zijudge = self.z <= __Lim.zlim[i]
                 Lijudge = __L0 >= __L0[i]
-                Ni = np.logical_and(zijudge, Lijudge)
+                Ni = np.logical_and(zijudge, Lijudge).sum()
                 Rijudge = self.z <= self.z[i]
-                Ri = np.logical_and(Rijudge, Lijudge)
+                Ri = np.logical_and(Rijudge, Lijudge).sum()
                 Ei = (1 + Ni) / 2
                 Vi = (Ni ** 2 - 1) / 12
                 uptemp += (Ri - Ei)

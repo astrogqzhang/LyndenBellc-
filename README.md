@@ -7,8 +7,11 @@ It also consider the dependence of resdshift and Luminosity. It adopt the lumino
 
 [1971MNRAS.155...95L](https://ui.adsabs.harvard.edu/#abs/1971MNRAS.155...95L)
 
-# Useage
-You are expected to define __Limit__ first. This class needs redshift, luminosity and limit. __Flim__ is the threshold of the data and it in unit 
-of erg  cm$^-2$ s$^-1$. 
+# Usage
+You are expected to define __Limit__ first. This class needs redshift, luminosity and limit. __Flim__ is the threshold of the data and it in unit of erg  cm$^-2$ s$^-1$. Then you can transport 
+redshift, luminosity and your Limit class to LyndenBell. The LyndenBellc() method is designed to obtain the cumulative distribution of redshift and luminosity.
+
+If redshift and luminosity are not independent, you can transport k to represent the evolution of luminosity. You can also use testindependence() method to test the independence and this method 
+also auto assign k.
 
 

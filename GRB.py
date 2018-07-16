@@ -12,9 +12,9 @@ class GRB():
     def __init__(self, z = 0, L = 0, alpha = False, beta = False, Ep = 200, Fen = False, Fpho = False, SpecType = False, rangeup = False, rangedown = False):
         self.z = z
         self.L = L
-        self.alpha = self.alpha
-        self.beta = self.beta
-        self.Ep = self.Ep
+        self.alpha = alpha
+        self.beta = beta
+        self.Ep = Ep
         self.Fen = Fen
         self.Fpho = Fpho
         self.SpecType = SpecType
@@ -82,6 +82,8 @@ class GRB():
         return A * (E / 100) ** self.alpha ** math.exp(- (2 + self.alpha) * E / self.Ep)
 
     def Kcorrection(self, Eup, Edown, FLAG = False):
+        '''This method calculates K-correction. It give the transfrom from the energy band of observed 
+        to given energy band. It also receive a FLAG. If this variable is setten as "photon", Then this K-correction will carry energy.'''
         if self.SpecType == "Band":
             functemp = lambda E: E * self.__Band(E, 100)
         elif self.SpecType == "ExpCutoff":
@@ -98,28 +100,28 @@ class GRB():
         self.Kcorr = uptemp / downtemp
         return self.Kcorr
 
-    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = False):
+    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):
         for i in [Fen, Fpho, self.Fen, self.Fpho]:
             if i:
                 if i in [Fen, self.Fen]:
                     temp = i
                 else:
                     temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
-        if not ifKcorr:
+        if ifKcorr:
             try:
                 temp = temp * self.Kcorr
             except:
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
         return 4 * math.pi * cosmo.luminosity_distance(self.z).value.cgs ** 2 * temp
     
-    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = False):
+    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):
         for i in [Fen, Fpho, self.Fen, self.Fpho]:
             if i:
                 if i in [Fen, self.Fen]:
                     temp = i
                 else:
                     temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
-        if not ifKcorr:
+        if  ifKcorr:
             try:
                 temp = temp * self.Kcorr
             except:

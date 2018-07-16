@@ -98,33 +98,49 @@ class GRB():
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)
         uptemp = quad(functemp, Edown / (1 + self.z), Eup / (1 + self.z))
-        self.Kcorr = uptemp[0] / downtemp[0]
-        return self.Kcorr
+        Kcorr = uptemp[0] / downtemp[0]
+        return Kcorr
 
-    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):
+    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True):
+        if not Eup:
+            Eup = self.rangeup
+        if not Edown:
+            Edown = self.rangedown
         for i in [Fen, Fpho, self.Fen, self.Fpho]:
             if i:
                 if i in [Fen, self.Fen]:
                     temp = i
+                    FLAG = False
+                    transform = 1
                 else:
-                    temp = (i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') * u.keV).to(u.erg).cgs.value
+                    temp = i
+                    FLAG = 'photon'
+                    transform = (1 * u.keV).to(u.erg).value
         if ifKcorr:
             try:
-                temp = temp * self.Kcorr
+                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG) * transform 
             except:
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
         return 4 * math.pi * cosmo.luminosity_distance(self.z).cgs.value ** 2 * temp
     
-    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):
+    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True):
+        if not Eup:
+            Eup = self.rangeup
+        if not Edown:
+            Edown = self.rangedown
         for i in [Fen, Fpho, self.Fen, self.Fpho]:
             if i:
                 if i in [Fen, self.Fen]:
                     temp = i
+                    FlAG = False
+                    transofrm = 1
                 else:
-                    temp =  (i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') * u.keV).to(u.erg).cgs.value
+                    temp = i
+                    FLAG = 'photon' 
+                    transform= (1 * u.keV).to(u.erg).value
         if  ifKcorr:
             try:
-                temp = temp * self.Kcorr
+                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG) * transform 
             except:
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
         dl = math.sqrt(self.L / 4 / math.pi / temp)

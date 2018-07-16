@@ -97,7 +97,7 @@ class GRB():
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)
         uptemp = quad(functemp, Edown / (1 + self.z), Eup / (1 + self.z))
-        self.Kcorr = uptemp / downtemp
+        self.Kcorr = uptemp[0] / downtemp[0]
         return self.Kcorr
 
     def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):

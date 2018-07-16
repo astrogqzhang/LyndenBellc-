@@ -9,8 +9,9 @@ import astropy.units as u
 
 class GRB():
     "This is a class for a GRB. It accept redshift, spectal index and other information to describe a GRB"
-    def __init__(self, z = 0, alpha = False, beta = False, Ep = 200, Fen = False, Fpho = False, SpecType = False, rangeup = False, rangedown = False):
+    def __init__(self, z = 0, L = 0, alpha = False, beta = False, Ep = 200, Fen = False, Fpho = False, SpecType = False, rangeup = False, rangedown = False):
         self.z = z
+        self.L = L
         self.alpha = self.alpha
         self.beta = self.beta
         self.Ep = self.Ep
@@ -73,23 +74,23 @@ class GRB():
     def __Band(self, E, A):
         Eb = (self.alpha - self.beta) * self.Ep / (2 + self.alpha)
         if E < Eb:
-            return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) / Ep)
+            return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) / self.Ep)
         else:
             return A * (E / 100) ** self.beta * math.exp((Eb / 100) ** (self.alpha - self.beta)) ** (self.beta - self.alpha) 
 
     def __ExpCutoff(self, E, A):
-        return A * (E / 100) ** self.alpha ** self.exp(- (2 + self.alpha) * E / self.Ep)
+        return A * (E / 100) ** self.alpha ** math.exp(- (2 + self.alpha) * E / self.Ep)
 
     def Kcorrection(self, Eup, Edown, FLAG = False):
         if self.SpecType == "Band":
-            functemp = lambda E: E * self.__Band(self, E, 100)
-        else self.SpecType == "ExpCutoff":
-            functemp = lambda E: E * self.__SpecType(self, E, 100)
+            functemp = lambda E: E * self.__Band(E, 100)
+        elif self.SpecType == "ExpCutoff":
+            functemp = lambda E: E * self.__SpecType(E, 100)
         if FLAG == 'photon':
             if self.SpecType == "Band":
-                functemp2 = lambda E: self.__Band(self, E, 100)
-            else self.SpecType == "ExpCutoff":
-                functemp2 = lambda E: self.__SpecType(self, E, 100)
+                functemp2 = lambda E: self.__Band(E, 100)
+            elif self.SpecType == "ExpCutoff":
+                functemp2 = lambda E: self.__SpecType(E, 100)
             downtemp = quad(functemp2, self.rangedown, self.rangeup)
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)

@@ -55,7 +55,7 @@ class GRB():
             assert (spectype in ['Band', 'ExpCutoff']), "This SpecType are not known."
             self.__SpecType = spectype
         else:
-            if self.beta :
+            if not np.isnan(self.beta) :
                 self.__SpecType = 'Band'
             else:
                 self.__SpecType = "ExpCutoff"
@@ -79,7 +79,7 @@ class GRB():
             return A * (E / 100) ** self.beta * math.exp((Eb / 100) ** (self.alpha - self.beta)) ** (self.beta - self.alpha) 
 
     def __ExpCutoff(self, E, A):
-        return A * (E / 100) ** self.alpha ** math.exp(- (2 + self.alpha) * E / self.Ep)
+        return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) * E / self.Ep)
 
     def Kcorrection(self, Eup, Edown, FLAG = False):
         '''This method calculates K-correction. It give the transfrom from the energy band of observed 
@@ -87,12 +87,12 @@ class GRB():
         if self.SpecType == "Band":
             functemp = lambda E: E * self.__Band(E, 100)
         elif self.SpecType == "ExpCutoff":
-            functemp = lambda E: E * self.__SpecType(E, 100)
+            functemp = lambda E: E * self.__ExpCutoff(E, 100)
         if FLAG == 'photon':
             if self.SpecType == "Band":
                 functemp2 = lambda E: self.__Band(E, 100)
             elif self.SpecType == "ExpCutoff":
-                functemp2 = lambda E: self.__SpecType(E, 100)
+                functemp2 = lambda E: self.__ExpCutoff(E, 100)
             downtemp = quad(functemp2, self.rangedown, self.rangeup)
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)
@@ -112,7 +112,7 @@ class GRB():
                 temp = temp * self.Kcorr
             except:
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
-        return 4 * math.pi * cosmo.luminosity_distance(self.z).value.cgs ** 2 * temp
+        return 4 * math.pi * cosmo.luminosity_distance(self.z).cgs.value ** 2 * temp
     
     def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = True):
         for i in [Fen, Fpho, self.Fen, self.Fpho]:

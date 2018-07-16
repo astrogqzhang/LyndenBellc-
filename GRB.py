@@ -42,6 +42,8 @@ class GRB():
         return self.__Ep
     @Ep.setter
     def Ep(self, Ep):
+        assert (Ep > 0), "The peak energy must larger than zero"
+        self.__Ep = Ep
 
     @property
     def SpecType(self):

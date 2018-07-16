@@ -3,7 +3,8 @@ import math
 import numpy as np
 import scipy as sp
 from scipy.integrate import quad
-from astropy.cosmology import Planck15
+from astropy.cosmology import Planck15, z_at_value
+import astropy.units as u
 
 
 class GRB():
@@ -77,17 +78,57 @@ class GRB():
     def __ExpCutoff(self, E, A):
         return A * (E / 100) ** self.alpha ** self.exp(- (2 + self.alpha) * E / self.Ep)
 
-    def Kcorrection(self, Eup, Edown):
+    def Kcorrection(self, Eup, Edown, FLAG = False):
         if self.SpecType == "Band":
             functemp = lambda E: E * self.__Band(self, E, 100)
         else self.SpecType == "ExpCutoff":
             functemp = lambda E: E * self.__SpecType(self, E, 100)
-        downtemp = quad(functemp, self.rangedown, self.rangeup)
+        if FLAG == 'photon':
+            if self.SpecType == "Band":
+                functemp2 = lambda E: self.__Band(self, E, 100)
+            else self.SpecType == "ExpCutoff":
+                functemp2 = lambda E: self.__SpecType(self, E, 100)
+            downtemp = quad(functemp2, self.rangedown, self.rangeup)
+        else:
+            downtemp = quad(functemp, self.rangedown, self.rangeup)
         uptemp = quad(functemp, Edown / (1 + self.z), Eup / (1 + self.z))
         self.Kcorr = uptemp / downtemp
         return self.Kcorr
 
-    def L(self, cosmo=Planck15):
-        if self.Fen:
+    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = False):
+        for i in [Fen, Fpho, self.Fen, self.Fpho]:
+            if i:
+                if i in [Fen, self.Fen]:
+                    temp = i
+                else:
+                    temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
+        if not ifKcorr:
+            try:
+                temp = temp * self.Kcorr
+            except:
+                print("The K-correction is not adopted, Because K-correction isn't assigned.")
+        return 4 * math.pi * cosmo.luminosity_distance(self.z).value.cgs ** 2 * temp
+    
+    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, ifKcorr = False):
+        for i in [Fen, Fpho, self.Fen, self.Fpho]:
+            if i:
+                if i in [Fen, self.Fen]:
+                    temp = i
+                else:
+                    temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
+        if not ifKcorr:
+            try:
+                temp = temp * self.Kcorr
+            except:
+                print("The K-correction is not adopted, Because K-correction isn't assigned.")
+        dl = math.sqrt(self.L / 4 / math.pi / temp)
+        dl = dl * u.cm
+        return z_at_value(cosmo.luminosity_distance, dl)
+        
+        
+        
+ 
+
+
             
 

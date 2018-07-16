@@ -76,14 +76,15 @@ class GRB():
         if E < Eb:
             return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) / self.Ep)
         else:
-            return A * (E / 100) ** self.beta * math.exp((Eb / 100) ** (self.alpha - self.beta)) ** (self.beta - self.alpha) 
+            return A * (E / 100) ** self.beta * math.exp(self.beta - self.alpha) * (Eb / 100) ** (self.alpha - self.beta) 
 
     def __ExpCutoff(self, E, A):
         return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) * E / self.Ep)
 
     def Kcorrection(self, Eup, Edown, FLAG = False):
         '''This method calculates K-correction. It give the transfrom from the energy band of observed 
-        to given energy band. It also receive a FLAG. If this variable is setten as "photon", Then this K-correction will carry energy.'''
+        to given energy band. It also receive a FLAG. If this variable is setten as "photon", Then this K-correction will carry energy.
+        Besides, If this variable is "photon", the energy is in unit of keV'''
         if self.SpecType == "Band":
             functemp = lambda E: E * self.__Band(E, 100)
         elif self.SpecType == "ExpCutoff":
@@ -106,7 +107,7 @@ class GRB():
                 if i in [Fen, self.Fen]:
                     temp = i
                 else:
-                    temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
+                    temp = (i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') * u.keV).to(u.erg).cgs.value
         if ifKcorr:
             try:
                 temp = temp * self.Kcorr
@@ -120,7 +121,7 @@ class GRB():
                 if i in [Fen, self.Fen]:
                     temp = i
                 else:
-                    temp = i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') 
+                    temp =  (i * self.Kcorrection(self.rangeup, self.rangedown, FLAG='photon') * u.keV).to(u.erg).cgs.value
         if  ifKcorr:
             try:
                 temp = temp * self.Kcorr

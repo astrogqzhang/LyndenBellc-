@@ -53,7 +53,7 @@ class Limit(star):
             f = itp.interp1d(self.__y, self.__x, fill_value="extrapolate")
             self.__zlim = f(self.L0)
         else: 
-            assert type(zlim) == type(0), "zlim and Flim can not both be zero"
+            assert type(zlim) != type(0), "zlim and Flim can not both be zero"
             f = itp.interp1d(self.Llim / (1 + self.z) ** self.k, self.z, fill_value="extrapolate")
             self.__zlim = f(self.L0) 
     
@@ -65,7 +65,7 @@ class Limit(star):
         if self.Flim != 0:
             self.__Llim = 4 * math.pi * self.cosmo.luminosity_distance(self.z).cgs.value ** 2 * self.Flim / (1 + self.z) ** self.k
         else:
-            assert type(Llim) == type(0), "zlim and Flim can not both be zero"
+            assert type(Llim) != type(0), "zlim and Flim can not both be zero"
             self.__Llim = Llim / (1 + self.z) ** self.k
 
 

@@ -61,7 +61,7 @@ class GRB():
                 self.__SpecType = "ExpCutoff"
 
     @property
-    def rangedwon(self):
+    def rangedown(self):
         return self.__rangedown
     @rangedown.setter
     def rangedown(self, rangedown):

@@ -54,7 +54,7 @@ class Limit(star):
             self.__zlim = f(self.L0)
         else: 
             assert type(zlim) != type(0), "zlim and Flim can not both be zero"
-            f = itp.interp1d(self.Llim / (1 + self.z) ** self.k, self.z, fill_value="extrapolate")
+            f = itp.interp1d(self.Llim / (1 + self.z) ** self.k, self.z, fill_value="extrapolate", kind='cubic')
             self.__zlim = f(self.L0) 
     
     @property

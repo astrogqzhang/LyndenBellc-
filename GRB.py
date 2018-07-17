@@ -74,14 +74,14 @@ class GRB():
     def __Band(self, E, A):
         Eb = (self.alpha - self.beta) * self.Ep / (2 + self.alpha)
         if E < Eb:
-            return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) / self.Ep)
+            return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) * E / self.Ep)
         else:
             return A * (E / 100) ** self.beta * math.exp(self.beta - self.alpha) * (Eb / 100) ** (self.alpha - self.beta) 
 
     def __ExpCutoff(self, E, A):
         return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) * E / self.Ep)
 
-    def Kcorrection(self, Eup, Edown, FLAG = False):
+    def Kcorrection(self, Eup, Edown, FLAG = False, frame='rest'):
         '''This method calculates K-correction. It give the transfrom from the energy band of observed 
         to given energy band. It also receive a FLAG. If this variable is setten as "photon", Then this K-correction will carry energy.
         Besides, If this variable is "photon", the energy is in unit of keV'''
@@ -97,11 +97,14 @@ class GRB():
             downtemp = quad(functemp2, self.rangedown, self.rangeup)
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)
-        uptemp = quad(functemp, Edown / (1 + self.z), Eup / (1 + self.z))
+        if frame == 'rest':
+            uptemp = quad(functemp, Edown / (1 + self.z), Eup / (1 + self.z))
+        elif frame == 'observer':
+            uptemp = quad(functemp, Edown,  Eup )
         Kcorr = uptemp[0] / downtemp[0]
         return Kcorr
 
-    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True):
+    def obtainL(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True, frame='rest'):
         if not Eup:
             Eup = self.rangeup
         if not Edown:
@@ -116,14 +119,16 @@ class GRB():
                     temp = i
                     FLAG = 'photon'
                     transform = (1 * u.keV).to(u.erg).value
+                break
         if ifKcorr:
             try:
-                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG) * transform 
-            except:
+                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG, frame=frame) * transform 
+            except :
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
-        return 4 * math.pi * cosmo.luminosity_distance(self.z).cgs.value ** 2 * temp
+        Llim = 4 * math.pi * cosmo.luminosity_distance(self.z).cgs.value ** 2 * temp
+        return Llim 
     
-    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True):
+    def obtainz(self, cosmo=Planck15, Fen = False, Fpho = False, Eup = False, Edown = False, ifKcorr = True, frame='rest'):
         if not Eup:
             Eup = self.rangeup
         if not Edown:
@@ -138,9 +143,10 @@ class GRB():
                     temp = i
                     FLAG = 'photon' 
                     transform= (1 * u.keV).to(u.erg).value
+                break
         if  ifKcorr:
             try:
-                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG) * transform 
+                temp = temp * self.Kcorrection(Eup, Edown, FLAG=FLAG, frame=frame) * transform 
             except:
                 print("The K-correction is not adopted, Because K-correction isn't assigned.")
         dl = math.sqrt(self.L / 4 / math.pi / temp)

@@ -55,7 +55,12 @@ class Limit(star):
         else: 
             assert type(zlim) != type(0), "zlim and Flim can not both be zero"
             f = itp.interp1d(self.Llim / (1 + self.z) ** self.k, self.z, fill_value="extrapolate", kind='cubic')
-            self.__zlim = f(self.L0) 
+            self.__zlim = f(self.L0)
+            # If the luminosity larger than the maximum limit, then set this zlim to be maximum redshift plus 1.
+            # This behavior is for avoid the error of interpolate.
+            for i in range(len(self.L0)):
+                if self.L0[i] > (self.Llim / (1 + self.z) ** self.k).max():
+                    self.__zlim[i] = self.z.max() + 1 
     
     @property
     def Llim(self):

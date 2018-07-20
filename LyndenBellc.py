@@ -121,13 +121,13 @@ class LyndenBell(star):
         __karray = []
         __tau = []
         for k in np.linspace(-5, 5, 5000):
-            __L0 = self.L / (1 + self.z) ** k
-            __Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo=self.cosmo)
+            L0 = self.L / (1 + self.z) ** k
+            Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo=self.cosmo)
             uptemp = 0
             downtemp = 0
             for i in range(len(self.z)):
-                zijudge = self.z <= __Lim.zlim[i]
-                Lijudge = __L0 >= __L0[i]
+                zijudge = self.z <= Lim.zlim[i]
+                Lijudge = L0 >= L0[i]
                 Ni = np.logical_and(zijudge, Lijudge).sum()
                 Rijudge = self.z <= self.z[i]
                 Ri = np.logical_and(Rijudge, Lijudge).sum()

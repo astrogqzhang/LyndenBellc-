@@ -59,7 +59,7 @@ class Limit(star):
             # If the luminosity larger than the maximum limit, then set this zlim to be maximum redshift plus 1.
             # This behavior is for avoid the error of interpolate.
         for i in range(len(self.L0)):
-            if self.L0[i] > (self.Llim / (1 + self.z) ** self.k).max():
+            if self.L0[i] > (self.Llim).max():
                 self.__zlim[i] = self.z.max() + 1 
     
     @property

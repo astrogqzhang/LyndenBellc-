@@ -52,7 +52,7 @@ class GRB():
     @SpecType.setter
     def SpecType(self, spectype):
         if spectype:
-            assert (spectype in ['Band', 'ExpCutoff']), "This SpecType are not known."
+            assert (spectype in ['Band', 'ExpCutoff', 'PowerLaw']), "This SpecType are not known."
             self.__SpecType = spectype
         else:
             if not np.isnan(self.beta) :
@@ -81,6 +81,9 @@ class GRB():
     def __ExpCutoff(self, E, A):
         return A * (E / 100) ** self.alpha * math.exp(- (2 + self.alpha) * E / self.Ep)
 
+    def __PowerLaw(self, E, A):
+        return A * (E / 100) ** self.alpha
+
     def Kcorrection(self, Eup, Edown, FLAG = False, frame='rest'):
         '''This method calculates K-correction. It give the transfrom from the energy band of observed 
         to given energy band. It also receive a FLAG. If this variable is setten as "photon", Then this K-correction will carry energy.
@@ -89,11 +92,15 @@ class GRB():
             functemp = lambda E: E * self.__Band(E, 100)
         elif self.SpecType == "ExpCutoff":
             functemp = lambda E: E * self.__ExpCutoff(E, 100)
+        elif self.SpecType == "PowerLaw":
+            functemp = lambda E: E * self.__PowerLaw(E, 100)
         if FLAG == 'photon':
             if self.SpecType == "Band":
                 functemp2 = lambda E: self.__Band(E, 100)
             elif self.SpecType == "ExpCutoff":
                 functemp2 = lambda E: self.__ExpCutoff(E, 100)
+            elif self.SpecType == "PowerLaw":
+                functemp2 = lambda E: self.__PowerLaw(E, 100)
             downtemp = quad(functemp2, self.rangedown, self.rangeup)
         else:
             downtemp = quad(functemp, self.rangedown, self.rangeup)

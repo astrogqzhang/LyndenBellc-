@@ -79,11 +79,12 @@ class LyndenBell(star):
     """A class with redshift and luminosity. It want to compute the luminosity function and redshift for some objects with Lynden-Bell c- method.
     It also consider the luminosity evolution (1+z)^k."""
     def __init__(self, z, L, lim, k = 0, cosmo = Planck15):
-        super().__init__(z, L)
+        super(z, L) = z, L
         self.k = k
         self.lim = lim
         self.cosmo = cosmo
         self.L0 = self.L / (1 + self.z) ** self.k
+
 
     def lyndenbellc(self):
         self.lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)

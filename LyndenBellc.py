@@ -118,14 +118,18 @@ class LyndenBell(star):
         Ldis = np.array(Ldis)
         return zdis, Ldis
 
-    def testindependence(self):
+    def testindependence(self, Weight='sqrtVar'):
+        """This function is written for test dependence between redshift and luminosity. It use tau static to 
+        test dependence. It can receive a parameter as Width. This function only consider 'sqrtVar' and 'equal' as width."""
+        Flag = Weight in ['sqrtVar', 'equal']
+        assert Flag, "The width must be sqrtVar or equal"
         __karray = []
         __tau = []
         for k in np.linspace(-5, 5, 5000):
             L0 = self.L / (1 + self.z) ** k
             Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo=self.cosmo)
-            uptemp = 0
-            downtemp = 0
+            Viarr = []
+            Tiarr = []
             for i in range(len(self.z)):
                 zijudge = self.z <= Lim.zlim[i]
                 Lijudge = L0 >= L0[i]
@@ -134,9 +138,16 @@ class LyndenBell(star):
                 Ri = np.logical_and(Rijudge, Lijudge).sum()
                 Ei = (1 + Ni) / 2
                 Vi = (Ni ** 2 - 1) / 12
-                uptemp += (Ri - Ei)
-                downtemp += Vi 
-            __tau.append(uptemp / math.sqrt(downtemp))
+                Ti = (Ri - Ei) / math.sqrt(Vi)
+                Tiarr.append(Tarr)
+                Viarr.append(Viarr)
+            Viarr = np.array(Viarr)
+            Tiarr = np.array(Tiarr)
+            if Weight == 'sqrtVar':
+                tau = (Tiarr * np.sqrt(Viarr)).sum() / math.sqrt(Viarr.sum()) 
+            elif Weight == 'equal':
+                tau = Tiarr.sum()
+            __tau.append(tau)
             __karray.append(k)
         __tau = np.array(__tau)
         __karray = np.array(__karray)

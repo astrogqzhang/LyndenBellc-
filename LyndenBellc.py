@@ -79,7 +79,7 @@ class LyndenBell(star):
     """A class with redshift and luminosity. It want to compute the luminosity function and redshift for some objects with Lynden-Bell c- method.
     It also consider the luminosity evolution (1+z)^k."""
     def __init__(self, z, L, lim, k = 0, cosmo = Planck15):
-        super(z, L) = z, L
+        super().__init__(z, L)
         self.k = k
         self.lim = lim
         self.cosmo = cosmo
@@ -139,8 +139,8 @@ class LyndenBell(star):
                 Ei = (1 + Ni) / 2
                 Vi = (Ni ** 2 - 1) / 12
                 Ti = (Ri - Ei) / math.sqrt(Vi)
-                Tiarr.append(Tarr)
-                Viarr.append(Viarr)
+                Tiarr.append(Ti)
+                Viarr.append(Vi)
             Viarr = np.array(Viarr)
             Tiarr = np.array(Tiarr)
             if Weight == 'sqrtVar':

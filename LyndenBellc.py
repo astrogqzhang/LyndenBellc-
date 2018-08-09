@@ -144,6 +144,7 @@ class LyndenBell(star):
             zijudge = self.z <= Lim.zlim[i]
             Lijudge = L0 >= L0[i]
             Ni = np.logical_and(zijudge, Lijudge).sum()
+            if Ni == 1: continue # don't consider Ni == 1
             Rijudge = self.z <= self.z[i]
             Ri = np.logical_and(Rijudge, Lijudge).sum()
             Ei = (1 + Ni) / 2

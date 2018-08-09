@@ -126,27 +126,7 @@ class LyndenBell(star):
         __karray = []
         __tau = []
         for k in np.linspace(-5, 5, 5000):
-            L0 = self.L / (1 + self.z) ** k
-            Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo=self.cosmo)
-            Viarr = []
-            Tiarr = []
-            for i in range(len(self.z)):
-                zijudge = self.z <= Lim.zlim[i]
-                Lijudge = L0 >= L0[i]
-                Ni = np.logical_and(zijudge, Lijudge).sum()
-                Rijudge = self.z <= self.z[i]
-                Ri = np.logical_and(Rijudge, Lijudge).sum()
-                Ei = (1 + Ni) / 2
-                Vi = (Ni ** 2 - 1) / 12
-                Ti = (Ri - Ei) / math.sqrt(Vi)
-                Tiarr.append(Ti)
-                Viarr.append(Vi)
-            Viarr = np.array(Viarr)
-            Tiarr = np.array(Tiarr)
-            if Weight == 'sqrtVar':
-                tau = (Tiarr * np.sqrt(Viarr)).sum() / math.sqrt(Viarr.sum()) 
-            elif Weight == 'equal':
-                tau = Tiarr.sum()
+            tau = self.tau(k, Weight = Weight)
             __tau.append(tau)
             __karray.append(k)
         __tau = np.array(__tau)
@@ -154,6 +134,31 @@ class LyndenBell(star):
         print("The best fit of k is {}".format(__karray[np.abs(__tau).argmin()])) 
         print("The 1 sigma error is k is +1 sigma:{} -1 sigma:{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))
         self.k = __karray[np.abs(__tau).argmin()]
+    
+    def tau(self, k = 0, Weight = 'sqrtVar'):
+        L0 = self.L / (1 + self.z) ** k
+        Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo = self.cosmo)
+        Viarr = []
+        Tiarr = []
+        for i in range(len(self.z)):
+            zijudge = self.z <= Lim.zlim[i]
+            Lijudge = L0 >= L0[i]
+            Ni = np.logical_and(zijudge, Lijudge).sum()
+            Rijudge = self.z <= self.z[i]
+            Ri = np.logical_and(Rijudge, Lijudge).sum()
+            Ei = (1 + Ni) / 2
+            Vi = (Ni ** 2 - 1) / 12
+            Ti = (Ri - Ei) / math.sqrt(Vi)
+            Tiarr.append(Ti)
+            Viarr.append(Vi)
+        Viarr = np.array(Viarr)
+        Tiarr = np.array(Tiarr)
+        if Weight == 'sqrtVar':
+            tautemp = (Tiarr * np.sqrt(Viarr)).sum() / math.sqrt(Viarr.sum()) 
+        elif Weight == 'equal':
+            tautemp = Tiarr.sum()
+        return tautemp
+ 
 
 
 

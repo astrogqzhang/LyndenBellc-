@@ -1,10 +1,12 @@
 import math
+from multiprocessing import Pool
 
 import numpy as np
 import scipy as sp
 import scipy.interpolate as itp
-from astropy.cosmology import Planck15 
- 
+from astropy.cosmology import Planck15
+
+
 class star():
     "This class is the base class for Limit and LyndenBell. It give the redshift and luminosity for an object"
     def __init__(self, z, L):
@@ -118,19 +120,21 @@ class LyndenBell(star):
         Ldis = np.array(Ldis)
         return zdis, Ldis
 
-    def testindependence(self, Weight='sqrtVar'):
+    def testindependence(self, Weight='sqrtVar', processnumber = 4):
         """This function is written for test dependence between redshift and luminosity. It use tau static to 
         test dependence. It can receive a parameter as Width. This function only consider 'sqrtVar' and 'equal' as width."""
         Flag = Weight in ['sqrtVar', 'equal']
         assert Flag, "The width must be sqrtVar or equal"
-        __karray = []
+        tempfunc = lambda k : self.tau(k, Weight = Weight)
         __tau = []
-        for k in np.linspace(-5, 5, 5000):
-            tau = self.tau(k, Weight = Weight)
-            __tau.append(tau)
-            __karray.append(k)
+        # for k in np.linspace(-5, 5, 5000):
+        #     tau = self.tau(k, Weight = Weight)
+        #     __tau.append(tau)
+        #     __karray.append(k)
+        __karray = np.linspace(-5, 5, 5000)
+        with Pool(processes = processnumber) as pool:
+            __tau.append(pool.map(tempfunc, __karray))
         __tau = np.array(__tau)
-        __karray = np.array(__karray)
         print("The best fit of k is {}".format(__karray[np.abs(__tau).argmin()])) 
         print("The 1 sigma error is k is +1 sigma:{} -1 sigma:{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))
         self.k = __karray[np.abs(__tau).argmin()]
@@ -159,19 +163,3 @@ class LyndenBell(star):
         elif Weight == 'equal':
             tautemp = Tiarr.sum()
         return tautemp
- 
-
-
-
-            
-
- 
-            
-    
-
-
-    
-
-
-    
-    

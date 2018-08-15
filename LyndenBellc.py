@@ -5,7 +5,7 @@ import numpy as np
 import scipy as sp
 import scipy.interpolate as itp
 from astropy.cosmology import Planck15
-
+from itertools import repeat
 
 class star():
     "This class is the base class for Limit and LyndenBell. It give the redshift and luminosity for an object"
@@ -125,7 +125,6 @@ class LyndenBell(star):
         test dependence. It can receive a parameter as Width. This function only consider 'sqrtVar' and 'equal' as width."""
         Flag = Weight in ['sqrtVar', 'equal']
         assert Flag, "The width must be sqrtVar or equal"
-        tempfunc = lambda k : self.tau(k, Weight = Weight)
         __tau = []
         # for k in np.linspace(-5, 5, 5000):
         #     tau = self.tau(k, Weight = Weight)
@@ -133,7 +132,7 @@ class LyndenBell(star):
         #     __karray.append(k)
         __karray = np.linspace(-5, 5, 5000)
         with Pool(processes = processnumber) as pool:
-            __tau.append(pool.map(tempfunc, __karray))
+            __tau.append(pool.starmap(self.tau, zip(__karray, repeat(Weight))))
         __tau = np.array(__tau)
         print("The best fit of k is {}".format(__karray[np.abs(__tau).argmin()])) 
         print("The 1 sigma error is k is +1 sigma:{} -1 sigma:{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))

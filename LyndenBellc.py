@@ -1,11 +1,12 @@
 import math
+from itertools import repeat
 from multiprocessing import Pool
 
 import numpy as np
 import scipy as sp
 import scipy.interpolate as itp
 from astropy.cosmology import Planck15
-from itertools import repeat
+
 
 class star():
     "This class is the base class for Limit and LyndenBell. It give the redshift and luminosity for an object"

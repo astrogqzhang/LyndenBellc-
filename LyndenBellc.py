@@ -44,7 +44,7 @@ class Limit(star):
         self.__y = 4 * math.pi * self.__dl ** 2 * self.Flim / (1 + self.__x) ** self.k
         self.Llim = Llim
         self.zlim = zlim
-
+        self.z_turnover = self.__x[self.__y.argmax()]
 
 
     @property

@@ -32,7 +32,12 @@ class star():
 
 
 class Limit(star):
-    "This class is prepared for LyndenBell. It return the flux limit of L and the limit of z."
+    '''This class is prepared for LyndenBell. It return the flux limit of L and the limit of z. 
+        Flim ----------- The flux limit. When zlim, Llim and Flim are both known, only conisder Flim.
+        k -------------- The (1 + z) ^ k. This parameter is prepared for luminosity evolution.
+        cosmo ---------- The cosmology model.
+        Llim ----------- The luminosity limit. It is the minmum luminosity at z.
+        zlim ----------- The redshift limit. It is the maximum redshift at which the GRB can be observed.'''
     def __init__(self, z, L, zlim = 0, Llim = 0, Flim=0, k = 0, cosmo=Planck15):
         super().__init__(z, L)
         self.Flim = Flim 

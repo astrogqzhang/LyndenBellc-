@@ -50,6 +50,8 @@ class Limit(star):
         self.Llim = Llim
         self.zlim = zlim
         self.z_turnover = self.__x[self.__y.argmax()]
+        if self.z_turnover == 0:
+            self.z_turnover = self.z.max() + 1
 
 
     @property

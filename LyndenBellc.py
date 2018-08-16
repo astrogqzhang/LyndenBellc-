@@ -138,8 +138,10 @@ class LyndenBell(star):
         print("The best fit of k is {}".format(__karray[np.abs(__tau).argmin()])) 
         print("The 1 sigma error is k is +1 sigma:{} -1 sigma:{}".format(__karray[np.abs(__tau -1).argmin()], __karray[np.abs(__tau + 1).argmin()]))
         self.k = __karray[np.abs(__tau).argmin()]
+        return __karray, __tau
     
     def tau(self, k = 0, Weight = 'sqrtVar'):
+        "This function consider (1+z)^k as the function to remove luminosity evolution."
         L0 = self.L / (1 + self.z) ** k
         Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo = self.cosmo)
         Viarr = []

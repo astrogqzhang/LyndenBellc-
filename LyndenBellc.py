@@ -96,27 +96,32 @@ class LyndenBell(star):
 
     def lyndenbellc(self):
         self.lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)
-        self.L0 = self.L / (1 + self.z) ** self.k
+        idx = self.lim.z_turnover
+        self.ztemp = self.z[idx]
+        self.Ltemp = self.L[idx]
+        zlim = self.lim.zlim[idx]
+        Llim = self.lim.Llim[idx]
+        self.L0 = self.Ltemp / (1 + self.ztemp) ** self.k
         self.__Marr = []
         self.__Narr = []
-        for i in range(len(self.z)):
-            zijudge = self.z <= self.lim.zlim[i]
+        for i in range(len(self.ztemp)):
+            zijudge = self.ztemp <= zlim[i]
             Lijudge = self.L0 >= self.L0[i]
             judgearray = np.logical_and(zijudge, Lijudge)
             self.__Narr.append(judgearray.sum())
-        for j in range(len(self.L)):
-            zjjudge = self.z <= self.z[j]
-            Ljjudge = self.L0 >= self.lim.Llim[j]
+        for j in range(len(self.Ltemp)):
+            zjjudge = self.ztemp <= self.ztemp[j]
+            Ljjudge = self.L0 >= Llim[j]
             judgearray = np.logical_and(zjjudge, Ljjudge)
             self.__Marr.append(judgearray.sum())
         zdis = []
         Ldis = []
-        for i in range(len(self.z)):
+        for i in range(len(self.ztemp)):
             ztempfunc = 1
             Ltempfunc = 1
-            ziarray = self.z < self.z[i]
+            ziarray = self.ztemp < self.ztemp[i]
             Liarray = self.L0 > self.L0[i]
-            for j in range(len(self.z)):
+            for j in range(len(self.ztemp)):
                 if ziarray[j] and self.__Marr[j]: ztempfunc *= (1 + 1 / self.__Marr[j])
             for j in range(len(self.L0)):
                 if Liarray[j] and self.__Narr[j]: Ltempfunc *= (1 + 1 / self.__Narr[j])
@@ -147,16 +152,21 @@ class LyndenBell(star):
     
     def tau(self, k = 0, Weight = 'sqrtVar'):
         "This function consider (1+z)^k as the function to remove luminosity evolution."
-        L0 = self.L / (1 + self.z) ** k
         Lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, k, cosmo = self.cosmo)
+        idx = self.z <= Lim.z_turnover
+        self.ztemp = self.z[idx]
+        self.Ltemp = self.L[idx]
+        zlim = Lim.zlim[idx]
+        Llim = Lim.Llim[idx]
+        L0 = self.Ltemp / (1 + self.ztemp) ** k
         Viarr = []
         Tiarr = []
-        for i in range(len(self.z)):
-            zijudge = self.z <= Lim.zlim[i]
+        for i in range(len(self.ztemp)):
+            zijudge = self.ztemp <= zlim[i]
             Lijudge = L0 >= L0[i]
             Ni = np.logical_and(zijudge, Lijudge).sum()
             if Ni == 1: continue # don't consider Ni == 1
-            Rijudge = self.z <= self.z[i]
+            Rijudge = self.ztemp <= self.ztemp[i]
             Ri = np.logical_and(Rijudge, Lijudge).sum()
             Ei = (1 + Ni) / 2
             Vi = (Ni ** 2 - 1) / 12

@@ -97,12 +97,12 @@ class LyndenBell(star):
 
 
     def lyndenbellc(self):
-        self.lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)
-        idx = self.z < self.lim.z_turnover
+        lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)
+        idx = self.z < lim.z_turnover
         self.ztemp = self.z[idx]
         self.Ltemp = self.L[idx]
-        zlim = self.lim.zlim[idx]
-        Llim = self.lim.Llim[idx]
+        zlim = lim.zlim[idx]
+        Llim = lim.Llim[idx]
         self.L0 = self.Ltemp / (1 + self.ztemp) ** self.k
         self.__Marr = []
         self.__Narr = []

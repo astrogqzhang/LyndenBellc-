@@ -99,33 +99,33 @@ class LyndenBell(star):
     def lyndenbellc(self):
         lim = Limit(self.z, self.L, self.lim.zlim, self.lim.Llim, self.lim.Flim, self.k, cosmo=self.cosmo)
         idx = self.z < lim.z_turnover
-        self.ztemp = self.z[idx]
-        self.Ltemp = self.L[idx]
+        ztemp = self.z[idx]
+        Ltemp = self.L[idx]
         zlim = lim.zlim[idx]
         Llim = lim.Llim[idx]
-        self.L0 = self.Ltemp / (1 + self.ztemp) ** self.k
+        L0 = Ltemp / (1 + ztemp) ** self.k
         self.__Marr = []
         self.__Narr = []
-        for i in range(len(self.ztemp)):
-            zijudge = self.ztemp <= zlim[i]
-            Lijudge = self.L0 >= self.L0[i]
+        for i in range(len(ztemp)):
+            zijudge = ztemp <= zlim[i]
+            Lijudge = L0 >= L0[i]
             judgearray = np.logical_and(zijudge, Lijudge)
             self.__Narr.append(judgearray.sum())
-        for j in range(len(self.Ltemp)):
-            zjjudge = self.ztemp <= self.ztemp[j]
-            Ljjudge = self.L0 >= Llim[j]
+        for j in range(len(Ltemp)):
+            zjjudge = ztemp <= ztemp[j]
+            Ljjudge = L0 >= Llim[j]
             judgearray = np.logical_and(zjjudge, Ljjudge)
             self.__Marr.append(judgearray.sum())
         zdis = []
         Ldis = []
-        for i in range(len(self.ztemp)):
+        for i in range(len(ztemp)):
             ztempfunc = 1
             Ltempfunc = 1
-            ziarray = self.ztemp < self.ztemp[i]
-            Liarray = self.L0 > self.L0[i]
-            for j in range(len(self.ztemp)):
+            ziarray = ztemp < ztemp[i]
+            Liarray = L0 > L0[i]
+            for j in range(len(ztemp)):
                 if ziarray[j] and self.__Marr[j]: ztempfunc *= (1 + 1 / self.__Marr[j])
-            for j in range(len(self.L0)):
+            for j in range(len(L0)):
                 if Liarray[j] and self.__Narr[j]: Ltempfunc *= (1 + 1 / self.__Narr[j])
             zdis.append(ztempfunc)
             Ldis.append(Ltempfunc)

@@ -38,7 +38,7 @@ class Limit(star):
         cosmo ---------- The cosmology model.
         Llim ----------- The luminosity limit. It is the minmum luminosity at z.
         zlim ----------- The redshift limit. It is the maximum redshift at which the GRB can be observed.'''
-    def __init__(self, z, L, zlim = 0, Llim = 0, Flim=0, k = 0, cosmo=Planck15):
+    def __init__(self, z, L, zlim = 0, Llim = 0, Flim=0, k = 0, cosmo=Planck15，z_turnover=None):
         super().__init__(z, L)
         self.Flim = Flim 
         self.k = k
@@ -49,9 +49,12 @@ class Limit(star):
         self.__y = 4 * math.pi * self.__dl ** 2 * self.Flim / (1 + self.__x) ** self.k
         self.Llim = Llim
         self.zlim = zlim
-        self.z_turnover = self.__x[self.__y.argmax()]
-        if self.z_turnover == 0:
-            self.z_turnover = self.z.max() + 1
+        if z_turnover:
+            self.z_turnover = self.__x[self.__y.argmax()]
+            if self.z_turnover == 0:
+                self.z_turnover = self.z.max() + 1
+        else:
+            self.z_turnover = 100
 
 
     @property

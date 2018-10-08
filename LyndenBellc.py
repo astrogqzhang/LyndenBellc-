@@ -184,5 +184,5 @@ class LyndenBell(star):
         if Weight == 'sqrtVar':
             tautemp = (Tiarr * np.sqrt(Viarr)).sum() / math.sqrt(Viarr.sum()) 
         elif Weight == 'equal':
-            tautemp = Tiarr.sum()
+            tautemp = Tiarr.sum() / np.sqrt(Tiarr.shape)
         return tautemp

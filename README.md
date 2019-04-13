@@ -1,15 +1,6 @@
 # LyndenBellc-
 The code for Lynden-Bell c- method. This method is dealing with truncated data to compute the luminosity function and redshift distribution.
-It also consider the dependence of resdshift and Luminosity. It adopt the luminosity evolution as $$L_0 = L / (1+z)^k$$. You can see the follow references for more details.
-
-
-[1992ApJ...399..345E](https://ui.adsabs.harvard.edu/#abs/1992ApJ...399..345E)
-
-[1971MNRAS.155...95L](https://ui.adsabs.harvard.edu/#abs/1971MNRAS.155...95L)
-
-# Usage
-You are expected to define __Limit__ first. This class needs redshift, luminosity and limit. __Flim__ is the threshold of the data and it in unit of erg  cm$$^-2$$ s$$^-1$$. Then you can transport 
-redshift, luminosity and your Limit class to LyndenBell. The LyndenBellc() method is designed to obtain the cumulative distribution of redshift and luminosity.
+It also consider the dependence of resdshift and Luminosity. It adopt the luminosity evolution as \\(L_0 = L / (1+z)^k\\) distribution of redshift and luminosity.
 
 If redshift and luminosity are not independent, you can transport k to represent the evolution of luminosity. You can also use testindependence() method to test the independence and this method 
 also auto assign k.
